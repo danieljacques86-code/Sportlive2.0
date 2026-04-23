@@ -1,145 +1,20 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blogflixtv Player</title>
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-<style>
-body {
-  margin:0;
-  background:#000;
-  color:#fff;
-  font-family:Arial;
-}
-
-header {
-  padding:10px;
-  background:#111;
-  text-align:center;
-  font-weight:bold;
-}
-
-#player {
-  width:100%;
-  height:220px;
-  background:#000;
-}
-
-#status {
-  padding:5px;
-  text-align:center;
-  font-weight:bold;
-}
-
-.online { color:#00ff88; }
-.offline { color:#ff4444; }
-
-.channel {
-  padding:10px;
-  border-bottom:1px solid #222;
-  cursor:pointer;
-}
-
-.channel:hover {
-  background:#222;
-}
-
-.now {
-  font-size:12px;
-  color:#aaa;
-}
-</style>
-</head>
-
-<body>
-
-<header>📺 Blogflixtv</header>
-
-<video id="player" controls autoplay></video>
-<div id="status">CONECTANDO...</div>
-
-<div id="channels"></div>
-
-<script>
-// ================= PLAYER =================
-const video = document.getElementById("player");
-const status = document.getElementById("status");
-
-function playStream(url) {
-  status.innerText = "CONECTANDO...";
-  status.className = "";
-
-  if (Hls.isSupported()) {
-    const hls = new Hls();
-    hls.loadSource(url);
-    hls.attachMedia(video);
-
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      video.play();
-      status.innerText = "AO VIVO";
-      status.className = "online";
-    });
-
-    hls.on(Hls.Events.ERROR, () => {
-      status.innerText = "OFFLINE";
-      status.className = "offline";
-    });
-
-  } else {
-    video.src = url;
-  }
-}
-
-// ================= M3U =================
-async function loadM3U(url) {
-  const res = await fetch(url);
-  const text = await res.text();
-
-  const lines = text.split("\n");
-  const channels = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].includes("#EXTINF")) {
-      const name = lines[i].split(",")[1];
-      const link = lines[i+1];
-      channels.push({ name, url: link });
-    }
-  }
-
-  return channels;
-}
-
-// ================= EPG (SIMPLES) =================
-function fakeNow() {
-  return "Programação indisponível";
-}
-
-// ================= INIT =================
-const PLAYLIST = "https://dl.dropboxusercontent.com/s/SEU_LINK_AQUI/lista.m3u";
-
-loadM3U(PLAYLIST).then(list => {
-  const container = document.getElementById("channels");
-
-  list.forEach(ch => {
-    const div = document.createElement("div");
-    div.className = "channel";
-
-    div.innerHTML = `
-      <b>${ch.name}</b>
-      <div class="now">${fakeNow()}</div>
-    `;
-
-    div.onclick = () => playStream(ch.url);
-
-    container.appendChild(div);
-  });
-
-  if (list.length) playStream(list[0].url);
-});
-</script>
-
-</body>
-</html>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.sportlivepremium" name="Sport Live Premium Repository" version="1.0.0" provider-name="SportLivePremium">
+  <extension point="xbmc.addon.repository" name="Sport Live Premium Repo">
+    <dir>
+      <info compressed="false">https://zalxjdkpvpwqagjalsbv.supabase.co/storage/v1/object/public/kodi-repo/addons.xml</info>
+      <checksum>https://zalxjdkpvpwqagjalsbv.supabase.co/storage/v1/object/public/kodi-repo/addons.xml.md5</checksum>
+      <datadir zip="true">https://zalxjdkpvpwqagjalsbv.supabase.co/storage/v1/object/public/kodi-repo/</datadir>
+    </dir>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="pt_BR">Reposit\u00f3rio oficial do Sport Live Premium para Kodi</summary>
+    <description lang="pt_BR">Instale e atualize o add-on Sport Live Premium automaticamente.</description>
+    <platform>all</platform>
+    <license>Proprietary</license>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
